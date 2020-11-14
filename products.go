@@ -31,9 +31,25 @@ type ProductLink struct {
 	Rel    string
 }
 
-func (c *Client) ProductList(page int) (*[]Product, error) {
+type ProductRequest struct {
+	// Specify what products to receive from the API. Note: This is OR not AND, so doing
+	// both business and green will show all green and all business products.
+	variable, green, tracker, prepay, business bool
+}
+
+func (c *Client) ProductList(
+	page int,
+	productOptions *ProductRequest,
+) (*[]Product, error) {
+	// TODO: Add support for `available_at` as time
+	// TODO: Possibly implement a generator/iterator?
 	params := map[string]string{
-		"page": strconv.Itoa(page),
+		"page":        strconv.Itoa(page),
+		"is_variable": strconv.FormatBool(productOptions.variable),
+		"is_green":    strconv.FormatBool(productOptions.green),
+		"is_tracker":  strconv.FormatBool(productOptions.tracker),
+		"is_prepay":   strconv.FormatBool(productOptions.prepay),
+		"is_business": strconv.FormatBool(productOptions.business),
 	}
 
 	resp, err := c.request("GET", "/products", nil, params)
