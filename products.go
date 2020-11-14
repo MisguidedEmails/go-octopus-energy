@@ -1,6 +1,7 @@
 package octopus
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/mitchellh/mapstructure"
@@ -65,4 +66,25 @@ func (c *Client) ProductList(
 	}
 
 	return &products, nil
+}
+
+// Get a specific product by it's productCode.
+func (c *Client) Product(productCode string) (*Product, error) {
+	// TODO: Add support for `tarrifs_active_at`
+
+	uri := fmt.Sprintf("/products/%s", productCode)
+
+	resp, err := c.request("GET", uri, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var product Product
+
+	err = mapstructure.Decode(resp, &product)
+	if err != nil {
+		return nil, err
+	}
+
+	return &product, nil
 }
