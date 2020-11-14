@@ -1,7 +1,6 @@
 package octopus
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/mitchellh/mapstructure"
@@ -43,8 +42,6 @@ func (c *Client) ProductList(page int) (*[]Product, error) {
 	}
 
 	var products []Product
-
-	fmt.Println(resp.(listResponse).Results)
 
 	err = mapstructure.Decode(resp.(listResponse).Results, &products)
 	if err != nil {
