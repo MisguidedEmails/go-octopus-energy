@@ -24,7 +24,7 @@ func TestClientBasicRequest(t *testing.T) {
 		httpmock.NewJsonResponderOrPanic(200, &testResponse{Hello: "there"}),
 	)
 
-	request, err := client.request("GET", "test-api", nil, nil)
+	request, err := client.request("GET", "/test-api", nil, nil)
 	if err != nil {
 		t.Error(err)
 	}

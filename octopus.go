@@ -34,7 +34,7 @@ func (c *Client) request(
 	body interface{},
 	parameters map[string]string,
 ) (interface{}, error) {
-	requestURL := fmt.Sprintf("%s%s", "https://api.octopus.energy/v1/", path)
+	requestURL := fmt.Sprintf("%s%s", "https://api.octopus.energy/v1", path)
 
 	var err interface{}
 
