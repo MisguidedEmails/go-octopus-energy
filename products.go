@@ -52,6 +52,7 @@ type ProductDetailed struct {
 	SampleQuotes map[string]struct {
 		DirectDebityMonthly sampleQuotes `mapstructure:"direct_debit_monthly"`
 	} `mapstructure:"sample_quotes"`
+
 	SampleConsumption sampleConsumption `mapstructure:"sample_consumption"`
 }
 
@@ -104,23 +105,23 @@ type sampleQuote struct {
 
 type sampleConsumption struct {
 	ElectricitySingleRate struct {
-		ElectricityStandard int `mapstructure:"electricity_standard"`
+		Standard int `mapstructure:"electricity_standard"`
 	} `mapstructure:"electricity_single_rate"`
 
 	ElectricityDualRate struct {
-		ElectricityDay   int `mapstructure:"electricity_day"`
-		ElectricityNight int `mapstructure:"electricity_night"`
+		Day   int `mapstructure:"electricity_day"`
+		Night int `mapstructure:"electricity_night"`
 	} `mapstructure:"electricity_dual_rate"`
 
 	DualFuelSingleRate struct {
 		ElectricityStandard int `mapstructure:"electricity_standard"`
-		GasStandard         int `mapstructure:"gas_standard"`
+		Gas                 int `mapstructure:"gas_standard"`
 	} `mapstructure:"dual_fuel_single_rate"`
 
 	DualFuelDuelRate struct {
 		ElectricityDay   int `mapstructure:"electricity_day"`
 		ElectricityNight int `mapstructure:"electricity_night"`
-		GasStandard      int `mapstructure:"gas_standard"`
+		Gas              int `mapstructure:"gas_standard"`
 	} `mapstructure:"dual_fuel_dual_rate"`
 }
 
