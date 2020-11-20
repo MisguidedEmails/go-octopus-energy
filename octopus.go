@@ -108,7 +108,7 @@ func NewClient(apiKey string) *Client {
 	}
 
 	client.HTTPClient.SetHeader("Accept", "application/json")
-	client.HTTPClient.SetAuthToken(client.apiKey)
+	client.HTTPClient.SetBasicAuth(client.apiKey, "")
 
 	return client
 }
