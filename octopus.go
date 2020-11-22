@@ -47,7 +47,9 @@ func (c *Client) request(
 		ForceContentType("application/json").
 		SetResult(&contents).
 		SetBody(body).
-		SetQueryParams(parameters)
+		SetQueryParams(parameters).
+		SetHeader("Accept", "application/json").
+		SetBasicAuth(c.apiKey, "")
 
 	request, err = baseRequest.Execute(method, requestURL)
 
@@ -87,13 +89,10 @@ func (c *Client) request(
 }
 
 func NewClient(apiKey string) *Client {
-	client := &Client{
+	apiClient := &Client{
 		apiKey:     apiKey,
 		HTTPClient: resty.New(),
 	}
 
-	client.HTTPClient.SetHeader("Accept", "application/json")
-	client.HTTPClient.SetBasicAuth(client.apiKey, "")
-
-	return client
+	return apiClient
 }
