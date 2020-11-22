@@ -49,22 +49,7 @@ func (c *Client) request(
 		SetBody(body).
 		SetQueryParams(parameters)
 
-	switch method {
-	case "GET":
-		request, err = baseRequest.Get(requestURL)
-	case "POST":
-		request, err = baseRequest.Post(requestURL)
-	case "DELETE":
-		request, err = baseRequest.Delete(requestURL)
-	case "PATCH":
-		request, err = baseRequest.Patch(requestURL)
-	case "PUT":
-		request, err = baseRequest.Put(requestURL)
-	default:
-		return nil, &HTTPError{
-			msg: fmt.Sprintf("given HTTP method '%s' not implemented", method),
-		}
-	}
+	request, err = baseRequest.Execute(method, requestURL)
 
 	if !request.IsSuccess() {
 		return request, &HTTPError{
