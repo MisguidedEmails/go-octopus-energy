@@ -2,26 +2,26 @@ package octopus
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/mitchellh/mapstructure"
 )
 
 type Product struct {
-	Code         string
-	FullName     string `mapstructure:"full_name"`
-	DisplayName  string `mapstructure:"display_name"`
-	Description  string
-	IsVariable   bool `mapstructure:"is_variable"`
-	IsGreen      bool `mapstructure:"is_green"`
-	IsTracker    bool `mapstructure:"is_tracker"`
-	IsPrepay     bool `mapstructure:"is_prepay"`
-	IsBusiness   bool `mapstructure:"is_business"`
-	IsRestricted bool `mapstructure:"is_restricted"`
-	Term         int
-	Brand        string
-	// TODO: We should probably translate this to `time.Time`
-	AvailableFrom string `mapstructure:"available_from"`
-	AvailableTo   string `mapstructure:"available_to"`
+	Code          string
+	FullName      string `mapstructure:"full_name"`
+	DisplayName   string `mapstructure:"display_name"`
+	Description   string
+	IsVariable    bool `mapstructure:"is_variable"`
+	IsGreen       bool `mapstructure:"is_green"`
+	IsTracker     bool `mapstructure:"is_tracker"`
+	IsPrepay      bool `mapstructure:"is_prepay"`
+	IsBusiness    bool `mapstructure:"is_business"`
+	IsRestricted  bool `mapstructure:"is_restricted"`
+	Term          int
+	Brand         string
+	AvailableFrom time.Time `mapstructure:"available_from"`
+	AvailableTo   time.Time `mapstructure:"available_to"`
 	Links         []ProductLink
 }
 
@@ -33,8 +33,8 @@ type ProductLink struct {
 
 type ProductDetailed struct {
 	Product `mapstructure:",squash"`
-	// TODO: time.time
-	TarrifsActiveAt string `mapstructure:"tariffs_active_at"`
+
+	TarrifsActiveAt time.Time `mapstructure:"tariffs_active_at"`
 
 	SingleRegisterElecTariffs map[string]struct {
 		DirectDebityMonthly singleTarrif `mapstructure:"direct_debit_monthly"`
@@ -136,7 +136,6 @@ type ProductRequest struct {
 }
 
 func (c *Client) ProductList(productOptions *ProductRequest) (*[]Product, error) {
-	// TODO: Add support for `available_at` as time
 	// TODO: Possibly implement a generator/iterator?
 
 	resp, err := c.request(
@@ -151,7 +150,19 @@ func (c *Client) ProductList(productOptions *ProductRequest) (*[]Product, error)
 
 	var products []Product
 
-	err = mapstructure.Decode(resp.(listResponse).Results, &products)
+	decoderConfig := mapstructure.DecoderConfig{
+		Result: &products,
+		DecodeHook: mapstructure.StringToTimeHookFunc(
+			"2006-01-02T15:04:05Z07:00",
+		),
+	}
+
+	decoder, err := mapstructure.NewDecoder(&decoderConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	err = decoder.Decode(resp.(listResponse).Results)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"failed to unmarshal response into slice of Product struct %v: %w",
@@ -165,8 +176,6 @@ func (c *Client) ProductList(productOptions *ProductRequest) (*[]Product, error)
 
 // Get a specific product by it's productCode.
 func (c *Client) Product(productCode string) (*ProductDetailed, error) {
-	// TODO: Add support for `tarrifs_active_at`
-
 	uri := fmt.Sprintf("/products/%s", productCode)
 
 	resp, err := c.request("GET", uri, nil, nil)
@@ -179,6 +188,9 @@ func (c *Client) Product(productCode string) (*ProductDetailed, error) {
 	decoderConfig := mapstructure.DecoderConfig{
 		ErrorUnused: true,
 		Result:      &product,
+		DecodeHook: mapstructure.StringToTimeHookFunc(
+			"2006-01-02T15:04:05Z07:00",
+		),
 	}
 
 	decoder, err := mapstructure.NewDecoder(&decoderConfig)
