@@ -21,8 +21,11 @@ type Consumption struct {
 }
 
 type ConsumptionRequest struct {
-	// TODO: Change to native types (int, time)
-	PeriodFrom, PeriodTo, PageSize, OrderBy, GroupBy string
+	PeriodFrom time.Time `url:"period_from,omitempty"`
+	PeriodTo   time.Time `url:"period_to,omitempty"`
+	PageSize   int       `url:"page_size,omitempty"`
+	OrderBy    string    `url:"order_by,omitempty"`
+	GroupBy    string    `url:"group_by,omitempty"`
 }
 
 // ElectricityMeterPoint returns the GSP for an electricity meter.
@@ -71,23 +74,7 @@ func (c *Client) ElectricityConsumption(
 		serial,
 	)
 
-	params := map[string]string{
-		"period_from": options.PeriodFrom,
-		"period_to":   options.PeriodTo,
-		"page_size":   options.PageSize,
-		"order_by":    options.OrderBy,
-		"group_by":    options.GroupBy,
-	}
-
-	// If any of the keys are blank, remove them so the API doesn't complain about us
-	// sending blank query params
-	for key, value := range params {
-		if value == "" {
-			delete(params, key)
-		}
-	}
-
-	resp, err := c.request("GET", uri, nil, params)
+	resp, err := c.request("GET", uri, nil, options)
 	if err != nil {
 		return nil, err
 	}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/mitchellh/mapstructure"
+	"github.com/google/go-querystring/query"
 )
 
 type Client struct {
@@ -39,13 +40,18 @@ type listResponse struct {
 func (c *Client) request(
 	method, path string,
 	body interface{},
-	parameters map[string]string,
+	parameters interface{},
 ) (interface{}, error) {
 	requestURL := fmt.Sprintf("%s%s", "https://api.octopus.energy/v1", path)
 
 	var err interface{}
 
 	var request *resty.Response
+
+	queryParams, err := query.Values(parameters)
+	if err != nil {
+		panic(err)
+	}
 
 	var contents interface{}
 	baseRequest := c.
@@ -54,7 +60,7 @@ func (c *Client) request(
 		ForceContentType("application/json").
 		SetResult(&contents).
 		SetBody(body).
-		SetQueryParams(parameters).
+		SetQueryString(queryParams.Encode()).
 		SetHeader("Accept", "application/json").
 		SetBasicAuth(c.apiKey, "")
 
