@@ -12,7 +12,9 @@ type GSP struct {
 	ProfileClass int `mapstructure:"profile_class"`
 }
 
+// Consumption represents a half hour consumption of gas or electricity.
 type Consumption struct {
+	// Consumption in kWh
 	Consumption   float32
 	IntervalStart time.Time `mapstructure:"interval_start"`
 	IntervalEnd   time.Time `mapstructure:"interval_end"`
@@ -23,6 +25,7 @@ type ConsumptionRequest struct {
 	PeriodFrom, PeriodTo, PageSize, OrderBy, GroupBy string
 }
 
+// ElectricityMeterPoint returns the GSP for an electricity meter.
 func (c *Client) ElectricityMeterPoint(mpan string) (*GSP, error) {
 	uri := fmt.Sprintf("/electricity-meter-points/%s", mpan)
 
@@ -51,6 +54,9 @@ func (c *Client) ElectricityMeterPoint(mpan string) (*GSP, error) {
 	return &gsp, nil
 }
 
+// ElectricityConsumption returns the consumption of an electricity meter.
+// mpan and serial are the MPAN and serial of the electricity meter.
+// options are the parameters to use when querying for consumption.
 func (c *Client) ElectricityConsumption(
 	mpan, serial string,
 	options ConsumptionRequest,
@@ -69,6 +75,8 @@ func (c *Client) ElectricityConsumption(
 		"group_by":    options.GroupBy,
 	}
 
+	// If any of the keys are blank, remove them so the API doesn't complain about us
+	// sending blank query params
 	for key, value := range params {
 		if value == "" {
 			delete(params, key)
