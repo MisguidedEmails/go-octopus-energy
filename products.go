@@ -165,8 +165,7 @@ func (c *Client) ProductList(productOptions *ProductRequest) (*[]Product, error)
 	err = decoder.Decode(resp.(listResponse).Results)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"failed to unmarshal response into slice of Product struct %v: %w",
-			resp,
+			"failed to unmarshal response into slice of Product struct: %w",
 			err,
 		)
 	}
@@ -201,8 +200,7 @@ func (c *Client) Product(productCode string) (*ProductDetailed, error) {
 	err = decoder.Decode(resp)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"failed to unmarshal response into ProductDetailed struct %v: %w",
-			resp,
+			"failed to unmarshal response into ProductDetailed struct: %w",
 			err,
 		)
 	}
