@@ -60,16 +60,26 @@ func (c *Client) ElectricityMeterPoint(mpan string) (*GSP, error) {
 	return &gsp, nil
 }
 
-// ElectricityConsumption returns the consumption of an electricity meter.
-// mpan and serial are the MPAN and serial of the electricity meter.
-// options are the parameters to use when querying for consumption.
-func (c *Client) ElectricityConsumption(
-	mpan, serial string,
+// consumption collates the common logic between the gas and electricity consumption
+// functions.
+// meterPointNumber is the MPRN or MPAN of the meter.
+// electricity determines if we query the electricity meter endpoint or the gas one.
+func (c *Client) consumption(
+	meterPointNumber, serial string,
 	options ConsumptionRequest,
+	electricity bool,
 ) ([]Consumption, error) {
+	var baseURL string
+	if electricity {
+		baseURL += "/electricity-meter-points"
+	} else {
+		baseURL += "/gas-meter-points"
+	}
+
 	uri := fmt.Sprintf(
-		"/electricity-meter-points/%s/meters/%s/consumption/",
-		mpan,
+		"%s/%s/meters/%s/consumption/",
+		baseURL,
+		meterPointNumber,
 		serial,
 	)
 
@@ -102,4 +112,28 @@ func (c *Client) ElectricityConsumption(
 	}
 
 	return consumption, nil
+}
+
+// ElectricityConsumption returns the consumption of an electricity meter.
+// mpan and serial are the MPAN and serial of the electricity meter.
+// options are the parameters to use when querying for consumption.
+func (c *Client) ElectricityConsumption(
+	mpan, serial string,
+	options ConsumptionRequest,
+) ([]Consumption, error) {
+	request, err := c.consumption(mpan, serial, options, true)
+
+	return request, err
+}
+
+// GasConsumption returns the consumption of a gas meter.
+// mprn and serial are the MPRN and serial of the gas meter.
+// options are the parameters to use when querying for consumption.
+func (c *Client) GasConsumption(
+	mprn, serial string,
+	options ConsumptionRequest,
+) ([]Consumption, error) {
+	request, err := c.consumption(mprn, serial, options, false)
+
+	return request, err
 }
