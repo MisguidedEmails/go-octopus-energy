@@ -48,7 +48,11 @@ func (c *Client) ElectricityMeterPoint(mpan string) (*GSP, error) {
 
 	err = decoder.Decode(resp)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(
+			"failed to unmarshal response into GSP struct %v: %w",
+			resp,
+			err,
+		)
 	}
 
 	return &gsp, nil
@@ -105,7 +109,11 @@ func (c *Client) ElectricityConsumption(
 
 	err = decoder.Decode(resp.(listResponse).Results)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(
+			"failed to unmarshal response into slice of Consumption struct %v: %w",
+			resp,
+			err,
+		)
 	}
 
 	return consumption, nil

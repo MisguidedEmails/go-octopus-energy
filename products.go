@@ -155,7 +155,11 @@ func (c *Client) ProductList(
 
 	err = mapstructure.Decode(resp.(listResponse).Results, &products)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(
+			"failed to unmarshal response into slice of Product struct %v: %w",
+			resp,
+			err,
+		)
 	}
 
 	return &products, nil
@@ -186,7 +190,11 @@ func (c *Client) Product(productCode string) (*ProductDetailed, error) {
 
 	err = decoder.Decode(resp)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(
+			"failed to unmarshal response into ProductDetailed struct %v: %w",
+			resp,
+			err,
+		)
 	}
 
 	return &product, nil
