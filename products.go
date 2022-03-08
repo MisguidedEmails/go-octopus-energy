@@ -70,6 +70,8 @@ type tariffBase struct {
 	ExitFeesExcVat float32 `mapstructure:"exit_fees_exc_vat"`
 	ExitFeesIncVat float32 `mapstructure:"exit_fees_inc_vat"`
 
+	ExitFeesType string `mapstructure:"exit_fees_type"`
+
 	Links []ProductLink
 }
 
