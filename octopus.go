@@ -79,7 +79,7 @@ func (c *Client) request(
 		}
 	} else if err != nil {
 		// If the request was "successful" but an error occurred
-		return nil, fmt.Errorf("Error making request to '%s': %w", requestURL, err)
+		return nil, fmt.Errorf("Error making request to '%s': %v", requestURL, err)
 	}
 
 	var results listResponse
